@@ -34,6 +34,7 @@ func (a *OpenAIAssistant) Query(message string) (response []string, err error) {
 			"You are an AI assistant that provides operating system commands that accomplish the users request",
 			"Your output is only the command. No explanation, no extra text, just the command",
 			"Make sure all commands you output are have no formatting. Plain text only",
+			"Use placeholders in angle brackets for unknown values the user should provide, example <subnet>",
 			fmt.Sprintf("They are running on %s", runtime.GOOS),
 		),
 		llms.TextParts(schema.ChatMessageTypeHuman, message),
@@ -64,12 +65,10 @@ func (a *OpenAIAssistant) Query(message string) (response []string, err error) {
 func (a *OpenAIAssistant) Explain(command string) (response []string, err error) {
 
 	template := `
-You follow the following template for your output. This output is for the example command 'ls -lah /tmp/folderXXX'
+You follow the following template for your output. This output is for the example command 'ls -a /tmp/folderXXX'
 
 ls: List directory contents.
--l: Long format, showing detailed information.
 -a: Include hidden files (those starting with .).
--h: Human-readable sizes (e.g., 1K, 234M, 2G).
 /tmp/folderXXX: Specifies the directory to list.
 `
 
@@ -77,6 +76,7 @@ ls: List directory contents.
 		llms.TextParts(schema.ChatMessageTypeSystem,
 			"You are an AI assistant that provides concise explanations of system commands",
 			"Your responses are brief and concise",
+			"When you see placeholders, words in angle brackets, always include instructions to replace with the real value",
 			template,
 			"You never include any sort of summary or lead-out, just the template",
 			fmt.Sprintf("They are running on %s", runtime.GOOS),

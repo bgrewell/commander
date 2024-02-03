@@ -49,7 +49,7 @@ func main() {
 
 	yellow := color.New(color.FgHiYellow)
 	cyan := color.New(color.FgHiCyan)
-	red := color.New(color.FgHiRed)
+	white := color.New(color.FgWhite)
 
 	var explain = flag.Bool("explain", false, "")
 	flag.Usage = Usage()
@@ -73,8 +73,8 @@ func main() {
 		panic(err)
 	}
 
-	cyan.Printf("Command:\n")
-	fmt.Println(response[0])
+	cyan.Print("Command:")
+	white.Printf(" %s\n", response[0])
 
 	if *explain {
 		explanation, err := assistant.Explain(response[0])
@@ -82,9 +82,15 @@ func main() {
 			panic(err)
 		}
 		lines := strings.Split(explanation[0], "\n")
-		red.Printf("\nExplanation:\n")
+		cyan.Print("\nCommand Explanation:\n")
 		for _, line := range lines {
-			yellow.Printf("  %s\n", line)
+			if strings.Contains(line, ":") {
+				parts := strings.Split(line, ":")
+				yellow.Printf("  %s:", parts[0])
+				white.Printf("%s\n", strings.Join(parts[1:], ":"))
+			} else {
+				white.Printf("  %s\n", line)
+			}
 		}
 	}
 }
