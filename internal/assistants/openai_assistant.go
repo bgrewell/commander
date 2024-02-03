@@ -67,7 +67,7 @@ ls: List directory contents.
 -l: Long format, showing detailed information.
 -a: Include hidden files (those starting with .).
 -h: Human-readable sizes (e.g., 1K, 234M, 2G).
-/tmp/folderXXX: Specifies the directory to list, in this case, /tmp/folderXXX.
+/tmp/folderXXX: Specifies the directory to list.
 `
 
 	content := []llms.MessageContent{
