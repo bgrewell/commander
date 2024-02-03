@@ -39,12 +39,15 @@ func (a *OpenAIAssistant) Query(message string) (response []string, err error) {
 		llms.TextParts(schema.ChatMessageTypeHuman, message),
 	}
 
-	completion, err := a.llm.GenerateContent(context.Background(), content, llms.WithStreamingFunc(
-		func(ctx context.Context, chunk []byte) error {
-			//fmt.Printf("chunk: %s [%d bytes]\n", string(chunk), len(chunk))
-			return nil
-		},
-	))
+	completion, err := a.llm.GenerateContent(context.Background(), content,
+		llms.WithStreamingFunc(
+			func(ctx context.Context, chunk []byte) error {
+				//fmt.Printf("chunk: %s [%d bytes]\n", string(chunk), len(chunk))
+				return nil
+			},
+		),
+		llms.WithTemperature(0.1),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -81,12 +84,15 @@ ls: List directory contents.
 		llms.TextParts(schema.ChatMessageTypeHuman, command),
 	}
 
-	completion, err := a.llm.GenerateContent(context.Background(), content, llms.WithStreamingFunc(
-		func(ctx context.Context, chunk []byte) error {
-			//fmt.Printf("chunk: %s [%d bytes]\n", string(chunk), len(chunk))
-			return nil
-		},
-	))
+	completion, err := a.llm.GenerateContent(context.Background(), content,
+		llms.WithStreamingFunc(
+			func(ctx context.Context, chunk []byte) error {
+				//fmt.Printf("chunk: %s [%d bytes]\n", string(chunk), len(chunk))
+				return nil
+			},
+		),
+		llms.WithTemperature(0.1),
+	)
 	if err != nil {
 		return nil, err
 	}
