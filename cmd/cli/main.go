@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	execute "github.com/BGrewell/go-execute/v2"
 	"github.com/bgrewell/commander/internal/assistants"
 	"github.com/fatih/color"
+	"log"
 	"os"
 	"strings"
 )
@@ -42,6 +44,7 @@ func Usage() (usage func()) {
 		PrintUsageLine("--h[elp]", false, "show this help output", "[flag]", "")
 		PrintUsageLine("--json", false, "output machine readable json", "[flag]", "not implemented")
 		PrintUsageLine("--explain", false, "provide an explanation of the output", "[flag]", "")
+		PrintUsageLine("--exec", false, "execute the returned command", "[flag]", "use with caution!!")
 	}
 }
 
@@ -50,8 +53,10 @@ func main() {
 	yellow := color.New(color.FgHiYellow)
 	cyan := color.New(color.FgHiCyan)
 	white := color.New(color.FgWhite)
+	c := color.New(color.FgCyan)
 
 	var explain = flag.Bool("explain", false, "")
+	var exec = flag.Bool("exec", false, "")
 	flag.Usage = Usage()
 	flag.Parse()
 	args := flag.Args()
@@ -59,11 +64,12 @@ func main() {
 	question := strings.Join(args, " ")
 
 	if question == "" {
-		fmt.Println("Error: You need to ask a question")
+		flag.Usage()
+		fmt.Println("\nError: You need to ask a question")
 		os.Exit(-1)
 	}
 
-	assistant, err := assistants.NewOpenAIAssistant()
+	assistant, err := assistants.NewOpenAIAssistant("gpt-4-turbo-preview")
 	if err != nil {
 		panic(err)
 	}
@@ -73,9 +79,13 @@ func main() {
 		panic(err)
 	}
 
-	cyan.Print("Command:")
-	white.Printf(" %s\n", response[0])
+	//cyan.Print("Command:")
+	command := response[0]
 
+	// Print out the command
+	c.Printf("%s\n", command)
+
+	// Explain if the flag is set
 	if *explain {
 		explanation, err := assistant.Explain(response[0])
 		if err != nil {
@@ -84,13 +94,22 @@ func main() {
 		lines := strings.Split(explanation[0], "\n")
 		cyan.Print("\nCommand Explanation:\n")
 		for _, line := range lines {
-			if strings.Contains(line, ":") {
-				parts := strings.Split(line, ":")
-				yellow.Printf("  %s:", parts[0])
-				white.Printf("%s\n", strings.Join(parts[1:], ":"))
+			if strings.Contains(line, "→") {
+				parts := strings.Split(line, "→")
+				yellow.Printf("  %s→", parts[0])
+				white.Printf("%s\n", strings.Join(parts[1:], "→"))
 			} else {
 				white.Printf("  %s\n", line)
 			}
+		}
+	}
+
+	// Execute if --exec was passed
+	if *exec {
+		exe := execute.NewExecutor()
+		err := exe.ExecuteTTY(command)
+		if err != nil {
+			log.Fatalf("error: %v\n", err)
 		}
 	}
 }
