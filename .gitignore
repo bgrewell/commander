@@ -94,3 +94,6 @@ fabric.properties
 
 # Environment file
 .env
+
+# Bin directory
+bin/
