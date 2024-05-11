@@ -1,80 +1,72 @@
 package main
 
 import (
-	"flag"
-	"fmt"
+	"errors"
 	execute "github.com/BGrewell/go-execute/v2"
 	"github.com/bgrewell/commander/internal/assistants"
+	"github.com/bgrewell/usage"
 	"github.com/fatih/color"
+	"github.com/joho/godotenv"
 	"log"
-	"os"
 	"strings"
 )
 
 var (
-	version string = "0.0.1"
-	build   string = "debug"
-	rev     string = "debug"
-	branch  string = "debug"
+	version    string = "0.0.1"
+	buildDate  string = "debug"
+	commitHash string = "debug"
+	branch     string = "debug"
 )
-
-func PrintUsageLine(parameter string, defaultValue interface{}, description string, units string, extra string) {
-	yellow := color.New(color.FgHiYellow)
-	cyan := color.New(color.FgHiCyan)
-	red := color.New(color.FgHiRed)
-	yellow.Printf("    %-22s", parameter)
-	cyan.Printf("  %-14v", defaultValue)
-	yellow.Printf("  %-36s", description)
-	cyan.Printf("  %-10s", units)
-	red.Printf("  %s\n", extra)
-}
-
-func Usage() (usage func()) {
-	return func() {
-		white := color.New(color.FgWhite)
-		boldWhite := color.New(color.FgWhite, color.Bold)
-		boldGreen := color.New(color.FgGreen, color.Bold)
-		usageLineFormat := "    %-22s  %-14v  %s\n"
-		//ruleLineFormat := "    %-22s  %-14v  %-36s  %s\n"
-		boldGreen.Printf("[+] Commander :: Version %v :: Build %v :: Rev %v :: Branch %v\n", version, build, rev, branch)
-		boldWhite.Print("Usage: ")
-		fmt.Printf("commander <flags> [question]\n")
-		boldGreen.Print("  General Options:\n")
-		white.Printf(usageLineFormat, "Parameter", "Default", "Description")
-		PrintUsageLine("--h[elp]", false, "show this help output", "[flag]", "")
-		PrintUsageLine("--json", false, "output machine readable json", "[flag]", "not implemented")
-		PrintUsageLine("--explain", false, "provide an explanation of the output", "[flag]", "")
-		PrintUsageLine("--exec", false, "execute the returned command", "[flag]", "use with caution!!")
-	}
-}
 
 func main() {
 
+	// Load a .env if it's present. If it's not, that's okay we will ignore that error
+	_ = godotenv.Load()
+
+	// Create a new sage to handle command line arguments
+	sage := usage.NewUsage(
+		usage.WithApplicationName("commander"),
+		usage.WithApplicationVersion(version),
+		usage.WithApplicationBuildDate(buildDate),
+		usage.WithApplicationCommitHash(commitHash),
+		usage.WithApplicationBranch(branch),
+		usage.WithApplicationDescription("Commander is a command line tool that uses large language models like OpenAI's GPT-4 to generate commands based on a question. It can also explain the command and execute it. Use command execution with caution as you may execute a command you do not wish to run"),
+	)
+
+	// Add standard options
+	explain := sage.AddBooleanOption("e", "explain", false, "Provide an explanation of the output", "", nil)
+	exec := sage.AddBooleanOption("x", "exec", false, "Execute the returned command", "", nil)
+
+	// Add the question argument
+	question := sage.AddArgument(1, "question", "The question to ask the assistant", "Question")
+
+	// Parse the arguments
+	parsed := sage.Parse()
+
+	// Print the usage if the arguments were not parsed
+	if !parsed {
+		sage.PrintError(errors.New("Failed to parse arguments"))
+	}
+
+	// Check if the question was provided
+	if *question == "" {
+		sage.PrintError(errors.New("You need to ask a question"))
+	}
+
+	// TODO: Move this elsewhere
 	yellow := color.New(color.FgHiYellow)
 	cyan := color.New(color.FgHiCyan)
 	white := color.New(color.FgWhite)
 	c := color.New(color.FgCyan)
 
-	var explain = flag.Bool("explain", false, "")
-	var exec = flag.Bool("exec", false, "")
-	flag.Usage = Usage()
-	flag.Parse()
-	args := flag.Args()
-
-	question := strings.Join(args, " ")
-
-	if question == "" {
-		flag.Usage()
-		fmt.Println("\nError: You need to ask a question")
-		os.Exit(-1)
-	}
-
+	// Create a new assistant using the GPT-4 Turbo model
 	assistant, err := assistants.NewOpenAIAssistant("gpt-4-turbo-preview")
 	if err != nil {
 		panic(err)
 	}
 
-	response, err := assistant.Query(question)
+	// Query the assistant
+	response, err := assistant.Query(*question)
 	if err != nil {
 		panic(err)
 	}
@@ -87,6 +79,7 @@ func main() {
 
 	// Explain if the flag is set
 	if *explain {
+		// Get the explanation
 		explanation, err := assistant.Explain(response[0])
 		if err != nil {
 			panic(err)
