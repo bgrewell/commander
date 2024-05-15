@@ -2,7 +2,9 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	execute "github.com/BGrewell/go-execute/v2"
+	"github.com/atotto/clipboard"
 	"github.com/bgrewell/commander/internal/assistants"
 	"github.com/bgrewell/usage"
 	"github.com/fatih/color"
@@ -36,7 +38,7 @@ func main() {
 	// Add standard options
 	explain := sage.AddBooleanOption("e", "explain", false, "Provide an explanation of the output", "", nil)
 	exec := sage.AddBooleanOption("x", "exec", false, "Execute the returned command", "", nil)
-
+	clip := sage.AddBooleanOption("c", "clip", false, "Place the command in the clipboard", "", nil)
 	// Add the question argument
 	question := sage.AddArgument(1, "question", "The question to ask the assistant", "Question")
 
@@ -60,7 +62,7 @@ func main() {
 	c := color.New(color.FgCyan)
 
 	// Create a new assistant using the GPT-4 Turbo model
-	assistant, err := assistants.NewOpenAIAssistant("gpt-4-turbo-preview")
+	assistant, err := assistants.NewOpenAIAssistant("gpt-4o")
 	if err != nil {
 		panic(err)
 	}
@@ -73,6 +75,14 @@ func main() {
 
 	//cyan.Print("Command:")
 	command := response[0]
+
+	if *clip {
+		err = clipboard.WriteAll(command)
+		if err != nil {
+			fmt.Println("Error copying to clipboard:", err)
+			return
+		}
+	}
 
 	// Print out the command
 	c.Printf("%s\n", command)

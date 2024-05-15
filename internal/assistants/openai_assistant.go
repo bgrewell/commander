@@ -3,11 +3,13 @@ package assistants
 import (
 	"context"
 	"fmt"
+	"github.com/briandowns/spinner"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/openai"
 	"github.com/tmc/langchaingo/schema"
 	"os"
 	"runtime"
+	"time"
 )
 
 func NewOpenAIAssistant(model string) (assistant Assistant, err error) {
@@ -30,6 +32,9 @@ type OpenAIAssistant struct {
 
 func (a *OpenAIAssistant) Query(message string) (response []string, err error) {
 
+	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+	s.Start()
+
 	instructions := []string{
 		"You are an AI assistant that provides operating system commands that accomplish the users request",
 		"Your output is only the command. No explanation, no extra text, just the command",
@@ -38,11 +43,11 @@ func (a *OpenAIAssistant) Query(message string) (response []string, err error) {
 		fmt.Sprintf("The user is running %s", runtime.GOOS),
 	}
 
-	if runtime.GOOS == "linux" && os.Getenv("SHELL") != "" {
+	if (runtime.GOOS == "linux" || runtime.GOOS == "darwin") && os.Getenv("SHELL") != "" {
 		instructions = append(instructions, fmt.Sprintf("The user is using the %s shell", os.Getenv("SHELL")))
 	}
 
-	if runtime.GOOS == "linux" && os.Getenv("USER") != "" {
+	if (runtime.GOOS == "linux" || runtime.GOOS == "darwin") && os.Getenv("USER") != "" {
 		instructions = append(instructions, fmt.Sprintf("The users name is %s. Use that for commands instead of ~ or $HOME", os.Getenv("USER")))
 	}
 
@@ -71,11 +76,15 @@ func (a *OpenAIAssistant) Query(message string) (response []string, err error) {
 		options = append(options, choice.Content)
 	}
 
+	s.Stop()
 	return options, nil
 
 }
 
 func (a *OpenAIAssistant) Explain(command string) (response []string, err error) {
+
+	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+	s.Start()
 
 	template := `
 You follow the following template for your output. This output is for the example command 'ls -a /tmp/folderXXX'
@@ -124,6 +133,7 @@ ls → List directory contents.
 		options = append(options, choice.Content)
 	}
 
+	s.Stop()
 	return options, nil
 
 }
