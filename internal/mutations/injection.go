@@ -19,7 +19,7 @@ func (i Injection) Apply(input string) (output string) {
 	homedir := getHomedir()
 
 	details := fmt.Sprintf("os: %s\nshell: %s\nuser: %s\nhomedir: %s", os, shell, user, homedir)
-	return fmt.Sprintf("%s\n\nAdditional Context: %s\n", details)
+	return fmt.Sprintf("%s\n\nAdditional Context: %s\n", input, details)
 }
 
 func getUser() (username string) {

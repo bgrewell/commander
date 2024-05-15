@@ -6,6 +6,7 @@ import (
 	execute "github.com/BGrewell/go-execute/v2"
 	"github.com/atotto/clipboard"
 	"github.com/bgrewell/commander/internal/assistants"
+	"github.com/bgrewell/commander/internal/mutations"
 	"github.com/bgrewell/usage"
 	"github.com/fatih/color"
 	"github.com/joho/godotenv"
@@ -67,8 +68,11 @@ func main() {
 		panic(err)
 	}
 
+	// TODO: TEMP
+	modifiedQ := mutations.Injection{}.Apply(*question)
+
 	// Query the assistant
-	response, err := assistant.Query(*question)
+	response, err := assistant.Query(modifiedQ)
 	if err != nil {
 		panic(err)
 	}
