@@ -101,3 +101,6 @@ bin/
 # Dist directory
 dist/
 public/
+
+# Custom scripts
+release-version.sh
