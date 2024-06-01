@@ -3,15 +3,12 @@ package main
 import (
 	"errors"
 	"fmt"
-	execute "github.com/BGrewell/go-execute/v2"
-	"github.com/atotto/clipboard"
-	"github.com/bgrewell/commander/internal/assistants"
-	"github.com/bgrewell/commander/internal/mutations"
+	"github.com/bgrewell/commander/internal/processors"
+	"github.com/bgrewell/go-execute/v2"
 	"github.com/bgrewell/usage"
-	"github.com/fatih/color"
 	"github.com/joho/godotenv"
 	"log"
-	"strings"
+	"os"
 )
 
 var (
@@ -26,7 +23,7 @@ func main() {
 	// Load a .env if it's present. If it's not, that's okay we will ignore that error
 	_ = godotenv.Load()
 
-	// Create a new sage to handle command line arguments
+	// Create a new usage to handle command line arguments
 	sage := usage.NewUsage(
 		usage.WithApplicationName("commander"),
 		usage.WithApplicationVersion(version),
@@ -56,65 +53,32 @@ func main() {
 		sage.PrintError(errors.New("You need to ask a question"))
 	}
 
-	// TODO: Move this elsewhere
-	yellow := color.New(color.FgHiYellow)
-	cyan := color.New(color.FgHiCyan)
-	white := color.New(color.FgWhite)
-	c := color.New(color.FgCyan)
+	p := processors.NewDefaultProcessor(
+		processors.WithModel("gpt-4o"),
+		processors.WithProvider("openai"),
+		processors.WithColor(true),
+		processors.WithClipboard(*clip),
+	)
 
-	// Create a new assistant using the GPT-4 Turbo model
-	assistant, err := assistants.NewOpenAIAssistant("gpt-4o")
+	response, err := p.Question(*question, *explain)
 	if err != nil {
-		panic(err)
+		log.Fatalf("error: %v\n", err)
 	}
 
-	// TODO: TEMP
-	modifiedQ := mutations.Injection{}.Apply(*question)
-
-	// Query the assistant
-	response, err := assistant.Query(modifiedQ)
-	if err != nil {
-		panic(err)
-	}
-
-	//cyan.Print("Command:")
-	command := response[0]
-
-	if *clip {
-		err = clipboard.WriteAll(command)
-		if err != nil {
-			fmt.Println("Error copying to clipboard:", err)
-			return
-		}
-	}
-
-	// Print out the command
-	c.Printf("%s\n", command)
-
-	// Explain if the flag is set
-	if *explain {
-		// Get the explanation
-		explanation, err := assistant.Explain(response[0])
-		if err != nil {
-			panic(err)
-		}
-		lines := strings.Split(explanation[0], "\n")
-		cyan.Print("\nCommand Explanation:\n")
-		for _, line := range lines {
-			if strings.Contains(line, "→") {
-				parts := strings.Split(line, "→")
-				yellow.Printf("  %s→", parts[0])
-				white.Printf("%s\n", strings.Join(parts[1:], "→"))
-			} else {
-				white.Printf("  %s\n", line)
-			}
-		}
-	}
+	// Print out the formatted response
+	fmt.Printf(response.Answer)
 
 	// Execute if --exec was passed
 	if *exec {
-		exe := execute.NewExecutor()
-		err := exe.ExecuteTTY(command)
+		exe := execute.NewExecutor(
+			execute.WithEnvironment(os.Environ()),
+			// TODO: this could be problematic as users may end up unknowingly 'stuck' inside another shell. Executing
+			//   outside a shell could also have problems if the command is a shell built-in or alias or otherwise has
+			//   a dependency on the shell environment. This is a good starting point but should be improved in the
+			//   future.
+			execute.WithDefaultShell(),
+		)
+		err := exe.ExecuteTTY(response.Command)
 		if err != nil {
 			log.Fatalf("error: %v\n", err)
 		}

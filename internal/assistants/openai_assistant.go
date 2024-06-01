@@ -30,6 +30,7 @@ type OpenAIAssistant struct {
 func (a *OpenAIAssistant) Query(message string) (response []string, err error) {
 
 	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+	s.Color("fgHiGreen")
 	s.Start()
 
 	systemPrompt := []string{
@@ -74,9 +75,19 @@ func (a *OpenAIAssistant) Query(message string) (response []string, err error) {
 func (a *OpenAIAssistant) Explain(command string) (response []string, err error) {
 
 	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+	s.Color("fgHiGreen")
 	s.Start()
 
-	systemPrompt := "You are an AI assistant tasked with providing concise explanations of system commands. Follow these guidelines for each command explanation:\n\nConciseness: Your responses must be brief and directly related to the command.\nPlaceholders: For any placeholders, such as words in angle brackets (e.g., <placeholder>), include explicit instructions to replace them with actual values when applicable.\nOutput Template: Use the specific template below for your explanations. For the command ls -a /tmp/folderXXX, the output should look like this:\nls → List directory contents.\n-a → Include hidden files (those starting with '.').\n/tmp/folderXXX → Specifies the directory to list.\nBrevity in Formatting: Ensure each line does not exceed 80 characters.\nExclusion of Summaries: Do not include any sort of summary or additional commentary beyond the template explanation."
+	systemPrompt := "You are an AI assistant tasked with providing concise explanations of system commands. " +
+		"Follow these guidelines for each command explanation:\n\n" +
+		"Conciseness: Your responses must be brief and directly related to the command.\n" +
+		"Exclusion of Summaries: Do not include any sort of summary or additional commentary beyond the template explanation.\n" +
+		"Placeholders: For any placeholders, such as words in angle brackets (e.g., <placeholder>), include explicit instructions to replace them with actual values when applicable.\n" +
+		"Brevity in Formatting: Ensure each line does not exceed 80 characters.\n" +
+		"Output Template: Use the specific template below for your explanations. For the command ls -a /tmp/folderXXX, the output should look like this:\n\n" +
+		"ls → List directory contents.\n" +
+		"-a → Include hidden files (those starting with '.').\n" +
+		"/tmp/folderXXX → Specifies the directory to list.\n"
 
 	content := []llms.MessageContent{
 		llms.TextParts(schema.ChatMessageTypeSystem,
