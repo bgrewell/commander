@@ -26,6 +26,8 @@ github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuP
 github.com/aymerick/douceur v0.2.0/go.mod h1:wlT5vV2O3h55X9m7iVYN0TBM0NH/MmbLnd30/FjWUq4=
 github.com/bgrewell/go-execute/v2 v2.0.0-20240528215126-50249f0c56c9 h1:TrM+sCDCFSWNWfCwp5FKq33xKSQ74pCA0a+3aToWexA=
 github.com/bgrewell/go-execute/v2 v2.0.0-20240528215126-50249f0c56c9/go.mod h1:9MGrGCjUImU4uB/gSSdu0LKcs9ykAyinGUpkRdx+LB4=
+github.com/bgrewell/go-execute/v2 v2.0.0-20240601221039-2f18d9f0fb41 h1:53bPKk3brLFGPKsiWzSEnIeZxSfds9OOGiyEKt8oThI=
+github.com/bgrewell/go-execute/v2 v2.0.0-20240601221039-2f18d9f0fb41/go.mod h1:9MGrGCjUImU4uB/gSSdu0LKcs9ykAyinGUpkRdx+LB4=
 github.com/bgrewell/usage v0.0.0-20240511174603-97beccabb17f h1:nKDLlv0r56a9+C1O3DLPtN+VzjvmC2ljBC8qE1abXbQ=
 github.com/bgrewell/usage v0.0.0-20240511174603-97beccabb17f/go.mod h1:UewBnSDwtreFTHTkEF/GJku52IM2duwkCRLkAiNeeIY=
 github.com/bitly/go-simplejson v0.5.0/go.mod h1:cXHtHw4XUPsvGaxgjIAn8PhEWG9NfngEKAMDJEczWVA=
