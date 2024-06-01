@@ -66,10 +66,11 @@ func main() {
 			ForceCheck:     true,
 		}
 
-		err := updater.BackgroundRun()
+		ver, err := updater.UpdateAvailable()
 		if err != nil {
-			log.Fatalf("Failed to update: %v\n", err)
+			log.Fatalf("Failed to get update information: %v\n", err)
 		}
+		fmt.Printf("Version %s is available\n", ver)
 
 		// If the update was successful, print the new version and exit
 		fmt.Printf("Updated to version %s\n", updater.Info.Version)
