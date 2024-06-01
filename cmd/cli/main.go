@@ -56,11 +56,15 @@ func main() {
 		log.Printf("Checking for updates...\n")
 		log.Printf("Current version: %s\n", version)
 
+		// TODO: This is temporary while commander is tested out. It will be replaced with a public update URL
+		//       once the beta version of commander has been released
+		updateURL := os.Getenv("COMMANDER_UPDATE_URL")
+
 		var updater = &selfupdate.Updater{
 			CurrentVersion: version,
-			ApiURL:         "https://commander_update:grape_shasta@software.updates.bengrewell.com/",
-			BinURL:         "https://commander_update:grape_shasta@software.updates.bengrewell.com/",
-			DiffURL:        "https://commander_update:grape_shasta@software.updates.bengrewell.com/",
+			ApiURL:         updateURL,
+			BinURL:         updateURL,
+			DiffURL:        updateURL,
 			Dir:            "update/",
 			CmdName:        "commander",
 			ForceCheck:     true,
