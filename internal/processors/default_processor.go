@@ -4,23 +4,26 @@ import (
 	"errors"
 	"github.com/atotto/clipboard"
 	"github.com/bgrewell/commander/internal"
+	"github.com/bgrewell/commander/internal/ai_tools"
 	"github.com/bgrewell/commander/internal/assistants"
 	"github.com/bgrewell/commander/internal/mutations"
 	"github.com/fatih/color"
+	"github.com/tmc/langchaingo/tools"
 	"strings"
 	"time"
 )
 
 func NewDefaultProcessor(options ...Option) Processor {
 	p := &DefaultProcessor{
-		yellow:       color.New(color.FgHiYellow),
-		cyan:         color.New(color.FgHiCyan),
-		gray:         color.New(color.FgWhite),
-		white:        color.New(color.FgHiWhite),
-		provider:     "openai",
-		model:        "gpt-4o",
-		useClipboard: false,
-		useColor:     true,
+		yellow:         color.New(color.FgHiYellow),
+		cyan:           color.New(color.FgHiCyan),
+		gray:           color.New(color.FgWhite),
+		white:          color.New(color.FgHiWhite),
+		provider:       "openai",
+		model:          "gpt-4o",
+		availableTools: []tools.Tool{ai_tools.PathChecker{}},
+		useClipboard:   false,
+		useColor:       true,
 	}
 	for _, option := range options {
 		option(p)
@@ -29,15 +32,16 @@ func NewDefaultProcessor(options ...Option) Processor {
 }
 
 type DefaultProcessor struct {
-	assistant    assistants.Assistant
-	useColor     bool
-	model        string
-	provider     string
-	useClipboard bool
-	yellow       *color.Color
-	cyan         *color.Color
-	gray         *color.Color
-	white        *color.Color
+	assistant      assistants.Assistant
+	availableTools []tools.Tool
+	useColor       bool
+	model          string
+	provider       string
+	useClipboard   bool
+	yellow         *color.Color
+	cyan           *color.Color
+	gray           *color.Color
+	white          *color.Color
 }
 
 func (p *DefaultProcessor) SetColor(useColor bool) {
@@ -61,7 +65,10 @@ func (p *DefaultProcessor) Question(input string, explain bool) (response *inter
 	// Select the provider
 	switch p.provider {
 	case "openai":
-		p.assistant, err = assistants.NewOpenAIAssistant(p.model)
+		p.assistant, err = assistants.NewOpenAIAssistant(
+			assistants.WithModel(p.model),
+			assistants.WithTools(p.availableTools),
+		)
 		if err != nil {
 			return nil, err
 		}
