@@ -16,7 +16,7 @@ TAGS := json,yaml,xml
 .DEFAULT_GOAL := build
 
 # Targets
-.PHONY: all build clean deps install-tools run tags
+.PHONY: all build clean deps install-tools run tags dist
 
 all: build
 
@@ -28,7 +28,7 @@ clean:
 	@rm -rf bin
 
 deps:
-	@export GOPRIVATE=github.com/bengrewell && $(GO) get -u ./...
+	@export GOPRIVATE=github.com/bgrewell && $(GO) get -u ./...
 
 install-tools:
 	@$(GO) install google.golang.org/protobuf/cmd/protoc-gen-go
@@ -42,3 +42,29 @@ tags:
 
 bin:
 	@mkdir -p bin
+
+dist: dist-windows-x86 dist-windows-amd64 dist-windows-arm dist-linux-amd64 dist-linux-arm dist-osx-amd64 dist-osx-arm
+
+dist-%:
+	GOOS=$(word 1, $(subst -, ,$*)) GOARCH=$(word 2, $(subst -, ,$*)) $(GO) build -ldflags "$(LD_FLAGS)" -o dist/$(BINARY_NAME)-$* cmd/cli/main.go
+
+dist-windows-x86:
+	GOOS=windows GOARCH=386 $(GO) build -ldflags "$(LD_FLAGS)" -o dist/windows-x86 cmd/cli/main.go
+
+dist-windows-amd64:
+	GOOS=windows GOARCH=amd64 $(GO) build -ldflags "$(LD_FLAGS)" -o dist/windows-amd64 cmd/cli/main.go
+
+dist-windows-arm:
+	GOOS=windows GOARCH=arm $(GO) build -ldflags "$(LD_FLAGS)" -o dist/windows-arm cmd/cli/main.go
+
+dist-linux-amd64:
+	GOOS=linux GOARCH=amd64 $(GO) build -ldflags "$(LD_FLAGS)" -o dist/linux-amd64 cmd/cli/main.go
+
+dist-linux-arm:
+	GOOS=linux GOARCH=arm $(GO) build -ldflags "$(LD_FLAGS)" -o dist/linux-arm cmd/cli/main.go
+
+dist-osx-amd64:
+	GOOS=darwin GOARCH=amd64 $(GO) build -ldflags "$(LD_FLAGS)" -o dist/osx-amd64 cmd/cli/main.go
+
+dist-osx-arm:
+	GOOS=darwin GOARCH=arm64 $(GO) build -ldflags "$(LD_FLAGS)" -o dist/osx-arm cmd/cli/main.go

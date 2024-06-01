@@ -97,3 +97,7 @@ fabric.properties
 
 # Bin directory
 bin/
+
+# Dist directory
+dist/
+public/

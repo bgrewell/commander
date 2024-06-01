@@ -7,15 +7,16 @@ import (
 	"github.com/bgrewell/go-execute/v2"
 	"github.com/bgrewell/usage"
 	"github.com/joho/godotenv"
+	"github.com/sanbornm/go-selfupdate/selfupdate"
 	"log"
 	"os"
 )
 
 var (
-	version    string = "0.0.1"
-	buildDate  string = "debug"
-	commitHash string = "debug"
-	branch     string = "debug"
+	version    string = "dev"
+	buildDate  string = "dev"
+	commitHash string = "dev"
+	branch     string = "dev"
 )
 
 func main() {
@@ -37,6 +38,7 @@ func main() {
 	explain := sage.AddBooleanOption("e", "explain", false, "Provide an explanation of the output", "", nil)
 	exec := sage.AddBooleanOption("x", "exec", false, "Execute the returned command", "", nil)
 	clip := sage.AddBooleanOption("c", "clip", false, "Place the command in the clipboard", "", nil)
+	update := sage.AddBooleanOption("u", "update", false, "Check for updates to the application", "", nil)
 	// Add the question argument
 	question := sage.AddArgument(1, "question", "The question to ask the assistant", "Question")
 
@@ -46,6 +48,32 @@ func main() {
 	// Print the usage if the arguments were not parsed
 	if !parsed {
 		sage.PrintError(errors.New("Failed to parse arguments"))
+	}
+
+	// Check if the update flag was passed
+	if *update {
+
+		log.Printf("Checking for updates...\n")
+		log.Printf("Current version: %s\n", version)
+
+		var updater = &selfupdate.Updater{
+			CurrentVersion: version,
+			ApiURL:         "https://commander_update:grape_shasta@software.updates.bengrewell.com/",
+			BinURL:         "https://commander_update:grape_shasta@software.updates.bengrewell.com/",
+			DiffURL:        "https://commander_update:grape_shasta@software.updates.bengrewell.com/",
+			Dir:            "update/",
+			CmdName:        "commander",
+			ForceCheck:     true,
+		}
+
+		err := updater.BackgroundRun()
+		if err != nil {
+			log.Fatalf("Failed to update: %v\n", err)
+		}
+
+		// If the update was successful, print the new version and exit
+		fmt.Printf("Updated to version %s\n", updater.Info.Version)
+		os.Exit(0)
 	}
 
 	// Check if the question was provided
