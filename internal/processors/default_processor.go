@@ -106,6 +106,15 @@ func (p *DefaultProcessor) Question(input string, explain bool) (response *inter
 		}
 	}
 
+	//executable := strings.Split(response.Command, " ")[0]
+	//checkResponse, err := p.assistant.Check(executable)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//if checkResponse[0] != "found" && checkResponse[0] != "" {
+	//	response.InstallInstructions = checkResponse[0]
+	//}
+
 	// Explain if the flag is set
 	if explain {
 		explainStart := time.Now()

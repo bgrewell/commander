@@ -78,14 +78,38 @@ func NewOpenAIAssistant(options ...Option) (assistant Assistant, err error) {
 		agents.NewOpenAIOption().WithSystemMessage(explainSystemPrompt),
 	)
 
+	checkSystemPrompt := "You are an AI assistant tasked with checking if a given executable is installed on the system. " +
+		"To do this you make use of tools that are available to you.\n" +
+		"You check to see if the executable is in the system's PATH. If it is not then  you return instructions on how" +
+		"to install the executable. You provide instructions only, no additional explanation or commentary\n" +
+		"In the case that the executable is in the system's PATH, you simply return 'found' and nothing else.\n" +
+		"In the case that it is not found then return the instructions to install in the following format:\n\n" +
+		"Note: <executable> does not appear to be on your system. To install it, run:\n" +
+		"<instructions_to_install>\n" + "For example:\n\n" +
+		"Note: vim does not appear to be on your system. To install it, run:\n" +
+		"sudo apt-get install vim\n"
+
+	a.checkAgent = agents.NewOpenAIFunctionsAgent(
+		a.llm,
+		a.tools,
+		agents.NewOpenAIOption().WithSystemMessage(checkSystemPrompt),
+	)
+	a.checkExecutor = agents.NewExecutor(
+		a.checkAgent,
+		a.tools,
+		agents.NewOpenAIOption().WithSystemMessage(checkSystemPrompt),
+	)
+
 	return a, nil
 }
 
 type OpenAIAssistant struct {
 	commandAgent    *agents.OpenAIFunctionsAgent
 	explainAgent    *agents.OpenAIFunctionsAgent
+	checkAgent      *agents.OpenAIFunctionsAgent
 	commandExecutor agents.Executor
 	explainExecutor agents.Executor
+	checkExecutor   agents.Executor
 	llm             *openai.LLM
 	model           string
 	tools           []tools.Tool
@@ -129,4 +153,19 @@ func (a *OpenAIAssistant) Explain(command string) (response []string, err error)
 	s.Stop()
 	return []string{result}, nil
 
+}
+
+func (a *OpenAIAssistant) Check(executable string) (response []string, err error) {
+
+	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+	s.Color("fgHiGreen")
+	s.Start()
+
+	result, err := chains.Run(context.Background(), a.checkExecutor, executable)
+	if err != nil {
+		return nil, err
+	}
+
+	s.Stop()
+	return []string{result}, nil
 }

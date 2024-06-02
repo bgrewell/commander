@@ -8,6 +8,7 @@ type QuestionResponse struct {
 	Command                 string        `json:"command" yaml:"command"`
 	Answer                  string        `json:"answer" yaml:"answer"`
 	Explanation             string        `json:"explanation" yaml:"explanation"`
+	InstallInstructions     string        `json:"install_instructions" yaml:"install_instructions"`
 	QuestionResponseTime    time.Duration `json:"question_response_time" yaml:"question_response_time"`
 	ExplanationResponseTime time.Duration `json:"explanation_response_time" yaml:"explanation_response_time"`
 }

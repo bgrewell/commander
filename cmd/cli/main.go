@@ -10,6 +10,7 @@ import (
 	"github.com/sanbornm/go-selfupdate/selfupdate"
 	"log"
 	"os"
+	"strings"
 )
 
 var (
@@ -53,9 +54,6 @@ func main() {
 	// Check if the update flag was passed
 	if *update {
 
-		log.Printf("Checking for updates...\n")
-		log.Printf("Current version: %s\n", version)
-
 		// TODO: This is temporary while commander is tested out. It will be replaced with a public update URL
 		//       once the beta version of commander has been released
 		updateURL := os.Getenv("COMMANDER_UPDATE_URL")
@@ -74,11 +72,20 @@ func main() {
 		if err != nil {
 			log.Fatalf("Failed to get update information: %v\n", err)
 		}
-		fmt.Printf("Version %s is available\n", ver)
 
-		// If the update was successful, print the new version and exit
-		fmt.Printf("Updated to version %s\n", updater.Info.Version)
-		os.Exit(0)
+		if ver != "" {
+			// Check to see if the version available is newer than the current version
+			if versionIsNewer(ver, version) {
+				log.Printf("Checking for updates...\n")
+				log.Printf("Current version: %s\n", version)
+				log.Printf("Version %s is available\n", ver)
+				if err := updater.Update(); err != nil {
+					log.Fatalf("Failed to update to version %s: %v\n", ver, err)
+				}
+				log.Printf("Updated to version %s\n", updater.Info.Version)
+				os.Exit(0)
+			}
+		}
 	}
 
 	// Check if the question was provided
@@ -101,6 +108,11 @@ func main() {
 	// Print out the formatted response
 	fmt.Printf(response.Answer)
 
+	// Print out the installation instructions if they are present
+	if response.InstallInstructions != "" {
+		fmt.Printf(response.InstallInstructions)
+	}
+
 	// Execute if --exec was passed
 	if *exec {
 		exe := execute.NewExecutor(
@@ -116,4 +128,41 @@ func main() {
 			log.Fatalf("error: %v\n", err)
 		}
 	}
+}
+
+func versionIsNewer(availableVersion string, currentVersion string) bool {
+
+	if currentVersion == "dev" || strings.Contains(currentVersion, "dirty") {
+		return false
+	}
+
+	// Split the available version
+	available := splitVersion(availableVersion)
+
+	// Split the current version
+	current := splitVersion(currentVersion)
+
+	// Compare the versions
+	if available[0] > current[0] {
+		return true
+	} else if available[0] == current[0] {
+		if available[1] > current[1] {
+			return true
+		} else if available[1] == current[1] {
+			if available[2] > current[2] {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func splitVersion(version string) []int {
+	var major, minor, patch int
+	_, err := fmt.Sscanf(version, "%d.%d.%d", &major, &minor, &patch)
+	if err != nil {
+		log.Fatalf("Failed to split version: %v\n", err)
+	}
+	return []int{major, minor, patch}
 }

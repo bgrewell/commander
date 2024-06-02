@@ -19,6 +19,7 @@ func WithTools(tools []tools.Tool) Option {
 type Assistant interface {
 	Query(message string) (response []string, err error)
 	Explain(command string) (response []string, err error)
+	Check(executable string) (response []string, err error)
 	SetModel(model string)
 	SetTools(tools []tools.Tool)
 }
