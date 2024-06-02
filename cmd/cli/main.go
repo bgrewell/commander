@@ -281,7 +281,7 @@ func main() {
 	query := sage.AddGroup(1, "Query", "Query options")
 
 	// Add default options
-	update := sage.AddBooleanOption("u", "update", true, "Check for updates to the application", "", nil)
+	update := sage.AddBooleanOption("u", "update", false, "Check for updates to the application", "", nil)
 	install := sage.AddBooleanOption("i", "install", false, "Install the application", "", nil)
 	alias := sage.AddBooleanOption("a", "alias", false, "Create alias's 'c' (commander), 'ce' (commander -explain) 'cx' (commander -exec) for the application", "", nil)
 
