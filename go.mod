@@ -4,7 +4,7 @@ go 1.21.2
 
 require (
 	github.com/atotto/clipboard v0.1.4
-	github.com/bgrewell/go-execute/v2 v2.0.0-20240528215126-50249f0c56c9
+	github.com/bgrewell/go-execute/v2 v2.0.0-20240601221039-2f18d9f0fb41
 	github.com/bgrewell/usage v0.0.0-20240511174603-97beccabb17f
 	github.com/briandowns/spinner v1.23.0
 	github.com/fatih/color v1.16.0
