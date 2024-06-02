@@ -5,9 +5,9 @@ go 1.21.2
 require (
 	github.com/atotto/clipboard v0.1.4
 	github.com/bgrewell/go-execute/v2 v2.0.0-20240601221039-2f18d9f0fb41
-	github.com/bgrewell/usage v0.0.0-20240511174603-97beccabb17f
+	github.com/bgrewell/usage v0.0.0-20240520234822-8edfa3622b16
 	github.com/briandowns/spinner v1.23.0
-	github.com/fatih/color v1.16.0
+	github.com/fatih/color v1.17.0
 	github.com/joho/godotenv v1.5.1
 	github.com/sanbornm/go-selfupdate v0.0.0-20230714125711-e1c03e3d6ac7
 	github.com/shirou/gopsutil/v3 v3.24.5
