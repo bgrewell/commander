@@ -39,7 +39,7 @@ func main() {
 	explain := sage.AddBooleanOption("e", "explain", false, "Provide an explanation of the output", "", nil)
 	exec := sage.AddBooleanOption("x", "exec", false, "Execute the returned command", "", nil)
 	clip := sage.AddBooleanOption("c", "clip", false, "Place the command in the clipboard", "", nil)
-	update := sage.AddBooleanOption("u", "update", false, "Check for updates to the application", "", nil)
+	update := sage.AddBooleanOption("u", "update", true, "Check for updates to the application", "", nil)
 	// Add the question argument
 	question := sage.AddArgument(1, "question", "The question to ask the assistant", "Question")
 
