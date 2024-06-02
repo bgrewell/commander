@@ -17,8 +17,10 @@ func (i Injection) Apply(input string) (output string) {
 	shell := getShell()
 	user := getUser()
 	homedir := getHomedir()
+	editor := getEditor()
 
-	details := fmt.Sprintf("os: %s\nshell: %s\nuser: %s\nhomedir: %s", os, shell, user, homedir)
+	details := fmt.Sprintf(" os: %s\n shell: %s\n user: %s\n homedir: %s\n editor: %s\n",
+		os, shell, user, homedir, editor)
 	return fmt.Sprintf("%s\n\nAdditional Context: %s\n", input, details)
 }
 
@@ -48,6 +50,13 @@ func getShell() (shell string) {
 		}
 	case "windows":
 		return detectShell()
+	}
+	return "unknown"
+}
+
+func getEditor() (editor string) {
+	if editor := os.Getenv("EDITOR"); editor != "" {
+		return editor
 	}
 	return "unknown"
 }
