@@ -1,0 +1,110 @@
+version: 1
+
+before:
+  hooks:
+    - go mod tidy
+
+project_name: commander
+
+builds:
+  - id: windows_amd64
+    main: ./cmd/cli/main.go
+    goos:
+      - windows
+    goarch:
+      - amd64
+    ldflags:
+      - -X 'main.version={{.Version}}' -X 'main.buildDate={{.Timestamp}}' -X 'main.commitHash={{.Commit}}' -X 'main.branch={{.Branch}}'
+    binary: bin/{{ .ProjectName }}-windows-amd64
+  - id: windows_arm
+    main: ./cmd/cli/main.go
+    goos:
+      - windows
+    goarch:
+      - arm
+    ldflags:
+      - -X 'main.version={{.Version}}' -X 'main.buildDate={{.Timestamp}}' -X 'main.commitHash={{.Commit}}' -X 'main.branch={{.Branch}}'
+    binary: bin/{{ .ProjectName }}-windows-arm
+  - id: linux_amd64
+    main: ./cmd/cli/main.go
+    goos:
+      - linux
+    goarch:
+      - amd64
+    ldflags:
+      - -X 'main.version={{.Version}}' -X 'main.buildDate={{.Timestamp}}' -X 'main.commitHash={{.Commit}}' -X 'main.branch={{.Branch}}'
+    binary: bin/{{ .ProjectName }}-linux-amd64
+  - id: linux_arm
+    main: ./cmd/cli/main.go
+    goos:
+      - linux
+    goarch:
+      - arm
+    ldflags:
+      - -X 'main.version={{.Version}}' -X 'main.buildDate={{.Timestamp}}' -X 'main.commitHash={{.Commit}}' -X 'main.branch={{.Branch}}'
+    binary: bin/{{ .ProjectName }}-linux-arm
+  - id: darwin_amd64
+    main: ./cmd/cli/main.go
+    goos:
+      - darwin
+    goarch:
+      - amd64
+    ldflags:
+      - -X 'main.version={{.Version}}' -X 'main.buildDate={{.Timestamp}}' -X 'main.commitHash={{.Commit}}' -X 'main.branch={{.Branch}}'
+    binary: bin/{{ .ProjectName }}-darwin-amd64
+  - id: darwin_arm64
+    main: ./cmd/cli/main.go
+    goos:
+      - darwin
+    goarch:
+      - arm64
+    ldflags:
+      - -X 'main.version={{.Version}}' -X 'main.buildDate={{.Timestamp}}' -X 'main.commitHash={{.Commit}}' -X 'main.branch={{.Branch}}'
+    binary: bin/{{ .ProjectName }}-darwin-arm64
+
+archives:
+  - id: tarball
+    format: tar.gz
+    files:
+      - LICENSE
+      - README.md
+      - bin/
+  - id: zipfile
+    format: zip
+    files:
+      - LICENSE
+      - README.md
+      - bin/
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}-{{ .ShortCommit }}"
+
+release:
+  github:
+    owner: bgrewell
+    name: commander
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+brews:
+  - tap:
+      owner: bgrewell
+      name: homebrew-tap
+    name: commander
+    ids:
+      - tarball
+    homepage: "https://github.com/bgrewell/commander"
+    description: "Commander is a command line tool that uses large language models like OpenAI's GPT-4 to generate commands based on a question."
+    folder: Formula
+    install: |
+      bin.install "commander"
+    test: |
+      system "#{bin}/commander --version"

@@ -13,6 +13,7 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -37,28 +38,26 @@ func installBinary() {
 		linkLocation = "/usr/local/bin/commander"
 	}
 
-	//// 1. Check for permissions
-	//err := checkPermissions(installDir)
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-
-	// 2. Ensure the directory exists
+	// 1. Ensure the directories exists
 	err := ensureDir(installDir)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	err = ensureDir(path.Dir(linkLocation))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	// 3. Move the binary to the directory
+	// 2. Move the binary to the directory
 	err = moveSelf(installDir)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	// 4. Create the symlink
+	// 3. Create the symlink
 	targetPath := filepath.Join(installDir, filepath.Base(os.Args[0]))
 	err = createLink(targetPath, linkLocation)
 	if err != nil {
@@ -66,7 +65,7 @@ func installBinary() {
 		return
 	}
 
-	// 5. Display a success message
+	// 4. Display a success message
 	fmt.Println("Installation successful.")
 }
 
@@ -262,10 +261,23 @@ func createAlias(alias ...Alias) (shellcfg string, err error) {
 	return shellConfigFile, nil
 }
 
+func getExecutableLocation() (string, error) {
+	ex, err := os.Executable()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Dir(ex), nil
+}
+
 func main() {
 
 	// Load a .env if it's present. If it's not, that's okay we will ignore that error
-	_ = godotenv.Load()
+	locations := []string{".env"}
+	binDir, err := getExecutableLocation()
+	if err == nil {
+		locations = append(locations, path.Join(binDir, ".env"))
+	}
+	_ = godotenv.Load(locations...)
 
 	// Create a new usage to handle command line arguments
 	sage := usage.NewUsage(

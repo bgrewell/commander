@@ -24,12 +24,8 @@ github.com/atotto/clipboard v0.1.4 h1:EH0zSVneZPSuFR11BlR9YppQTVDbh5+16AmcJi4g1z
 github.com/atotto/clipboard v0.1.4/go.mod h1:ZY9tmq7sm5xIbd9bOK4onWV4S6X0u6GY7Vn0Yu86PYI=
 github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuPk=
 github.com/aymerick/douceur v0.2.0/go.mod h1:wlT5vV2O3h55X9m7iVYN0TBM0NH/MmbLnd30/FjWUq4=
-github.com/bgrewell/go-execute/v2 v2.0.0-20240528215126-50249f0c56c9 h1:TrM+sCDCFSWNWfCwp5FKq33xKSQ74pCA0a+3aToWexA=
-github.com/bgrewell/go-execute/v2 v2.0.0-20240528215126-50249f0c56c9/go.mod h1:9MGrGCjUImU4uB/gSSdu0LKcs9ykAyinGUpkRdx+LB4=
 github.com/bgrewell/go-execute/v2 v2.0.0-20240601221039-2f18d9f0fb41 h1:53bPKk3brLFGPKsiWzSEnIeZxSfds9OOGiyEKt8oThI=
 github.com/bgrewell/go-execute/v2 v2.0.0-20240601221039-2f18d9f0fb41/go.mod h1:9MGrGCjUImU4uB/gSSdu0LKcs9ykAyinGUpkRdx+LB4=
-github.com/bgrewell/usage v0.0.0-20240511174603-97beccabb17f h1:nKDLlv0r56a9+C1O3DLPtN+VzjvmC2ljBC8qE1abXbQ=
-github.com/bgrewell/usage v0.0.0-20240511174603-97beccabb17f/go.mod h1:UewBnSDwtreFTHTkEF/GJku52IM2duwkCRLkAiNeeIY=
 github.com/bgrewell/usage v0.0.0-20240520234822-8edfa3622b16 h1:RN0FWBYd2RMCNUDAtDRCZJd1TcnTg3S7ImFyBBwg4hk=
 github.com/bgrewell/usage v0.0.0-20240520234822-8edfa3622b16/go.mod h1:UewBnSDwtreFTHTkEF/GJku52IM2duwkCRLkAiNeeIY=
 github.com/bitly/go-simplejson v0.5.0/go.mod h1:cXHtHw4XUPsvGaxgjIAn8PhEWG9NfngEKAMDJEczWVA=
@@ -53,8 +49,6 @@ github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkp
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
-github.com/fatih/color v1.16.0 h1:zmkK9Ngbjj+K0yRhTVONQh1p/HknKYSlNT+vZCzyokM=
-github.com/fatih/color v1.16.0/go.mod h1:fL2Sau1YI5c0pdGEVCbKQbLXB6edEj1ZgiY4NijnWvE=
 github.com/fatih/color v1.17.0 h1:GlRw1BRJxkpqUCBKzKOw098ed57fEsKeNjpTe3cSjK4=
 github.com/fatih/color v1.17.0/go.mod h1:YZ7TlrGPkiz6ku9fK3TLD/pl3CpsiFyu8N92HLgmosI=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
