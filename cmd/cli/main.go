@@ -26,6 +26,11 @@ var (
 	branch     string = "dev"
 )
 
+type Alias struct {
+	Name    string
+	Command string
+}
+
 func installBinary() {
 	installDir := "/opt/commander/bin/"
 	linkLocation := "/usr/local/bin/commander"
@@ -67,19 +72,6 @@ func installBinary() {
 
 	// 4. Display a success message
 	fmt.Println("Installation successful.")
-}
-
-// checkPermissions checks if the program has permissions to write to the directory.
-func checkPermissions(dir string) error {
-	// Try to create a temporary file to check permissions.
-	tempFile := filepath.Join(dir, "temp.txt")
-	file, err := os.Create(tempFile)
-	if err != nil {
-		return fmt.Errorf("permission denied: must be run with elevated privileges")
-	}
-	file.Close()
-	os.Remove(tempFile)
-	return nil
 }
 
 // ensureDir ensures that the directory and all its parents are created.
@@ -202,11 +194,6 @@ func aliasExists(shellConfigFile, aliasName string) (bool, error) {
 	return false, nil // Alias does not exist
 }
 
-type Alias struct {
-	Name    string
-	Command string
-}
-
 // createAlias creates an alias in the user's shell configuration file if it doesn't already exist.
 func createAlias(alias ...Alias) (shellcfg string, err error) {
 	var shellConfigFile string
@@ -289,8 +276,8 @@ func main() {
 		usage.WithApplicationDescription("Commander is a command line tool that uses large language models like OpenAI's GPT-4 to generate commands based on a question. It can also explain the command and execute it. Use command execution with caution as you may execute a command you do not wish to run"),
 	)
 
-	// Add a group for query options
-	query := sage.AddGroup(1, "Query", "Query options")
+	// Add a group for command query options
+	cmdQuery := sage.AddGroup(1, "Commands", "Command Query options")
 
 	// Add default options
 	update := sage.AddBooleanOption("u", "update", false, "Check for updates to the application", "", nil)
@@ -298,9 +285,9 @@ func main() {
 	alias := sage.AddBooleanOption("a", "alias", false, "Create alias's 'c' (commander), 'ce' (commander -explain) 'cx' (commander -exec) for the application", "", nil)
 
 	// Add query options
-	clip := sage.AddBooleanOption("c", "clip", false, "Place the command in the clipboard", "", query)
-	explain := sage.AddBooleanOption("e", "explain", false, "Provide an explanation of the output", "", query)
-	exec := sage.AddBooleanOption("x", "exec", false, "Execute the returned command", "", query)
+	clip := sage.AddBooleanOption("c", "clip", false, "Place the command in the clipboard", "", cmdQuery)
+	explain := sage.AddBooleanOption("e", "explain", false, "Provide an explanation of the output", "", cmdQuery)
+	exec := sage.AddBooleanOption("x", "exec", false, "Execute the returned command", "", cmdQuery)
 
 	// Add the question argument
 	question := sage.AddArgument(1, "question", "The question to ask the assistant", "Question")
